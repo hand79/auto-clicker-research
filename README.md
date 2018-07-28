@@ -6,6 +6,6 @@ Primary library:
 maven, spring boot, openCV, JNA
 
 # TODO
-. GUI implement
-. Mouse click monitor (optional)
-. Teaching doc (optional)
+GUI implement
+Mouse click monitor (optional)
+Teaching doc (optional)
