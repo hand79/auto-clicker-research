@@ -8,8 +8,10 @@ maven, spring boot, openCV, JNA
 
 ## TODO: 
 - GUI implement
+- Simple application Sample
 - Mouse click monitor (optional)
 - Teaching doc (optional)
+
 
 ## Reference: 
 - https://opencv.org/
