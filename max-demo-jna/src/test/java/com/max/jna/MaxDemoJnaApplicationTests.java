@@ -144,14 +144,35 @@ public class MaxDemoJnaApplicationTests {
 		System.out.println("cutWidth: " + cutImage.getWidth() + " cutHeight: " + cutImage.getHeight());
 		
 		// get Coordinate
-		MinMaxLocResult coordinate = OpenCVUtil.findCoordinate(scrImage, cutImage);
-		int x = new BigDecimal(coordinate.minLoc.x).intValue();
-		int y = new BigDecimal(coordinate.minLoc.y).intValue();
+		// 越接近0 越匹配
+//		MinMaxLocResult minMaxLocResult = OpenCVUtil.findCoordinateByTmSqdiffNormed(scrImage, cutImage);
+//		double thresholdMatch;
+//		System.out.println("coordinate.minVal:"+ minMaxLocResult.minVal);
+//		System.out.println("coordinate .minVal:"+ minMaxLocResult.maxVal);
+//		int x = new BigDecimal(minMaxLocResult.minLoc.x).intValue();
+//		int y = new BigDecimal(minMaxLocResult.minLoc.y).intValue();
 		
+		MinMaxLocResult minMaxLocResult = OpenCVUtil.findCoordinateByTmCcoeffNormed(scrImage, cutImage);
+		double thresholdMatch;
+		System.out.println("coordinate.minVal:"+ minMaxLocResult.minVal);
+		System.out.println("coordinate.maxVal:"+ minMaxLocResult.maxVal);
+		int x = new BigDecimal(minMaxLocResult.maxLoc.x).intValue();
+		int y = new BigDecimal(minMaxLocResult.maxLoc.y).intValue();
+
+		// gray
+//        Mat gray = new Mat();
+//        Imgproc.cvtColor(MatUttil.doBufferedImageToMat(scrImage), gray, Imgproc.COLOR_BGR2GRAY);
+        
 		System.out.println("x:" + x +" y:" + y);
 		BufferedImage r = scrImage.getSubimage(x, y, cutImage.getWidth(), cutImage.getHeight());
-//		ImageIOUtil.writeImage(r, "jpg", new File("G:\\r.jpg"));
+		ImageIOUtil.writeImage(r, "jpg", new File("G:\\r.jpg"));
 	}
+	
+//    //  For all the other methods, the higher the better
+//    if( match_method  == Imgproc.TM_SQDIFF || match_method == Imgproc.TM_SQDIFF_NORMED )
+//    { matchLoc = mmr.minLoc; }
+//    else
+//    { matchLoc = mmr.maxLoc; }
 	
 	
 	//  TODO Need to check why it is not correct
