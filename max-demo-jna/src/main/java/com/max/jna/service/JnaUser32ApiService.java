@@ -47,10 +47,15 @@ public interface JnaUser32ApiService{
 	public boolean isWindowVisible(HWND hWnd);
 
 	public boolean SetWindowPos(HWND hWnd, int hWndInsertAfter, int X, int Y, int width, int height, int uFlags);
+	
+	public boolean SetWindowPos(HWND hWnd, int hWndInsertAfter, int X, int Y, double width, double height, int uFlags);
 
 	public boolean adjustWindowSize(HWND hWnd, int width, int height);
 
 	public boolean moveWindow(HWND hWnd, int x, int y);
+
+	public int releaseDC(HWND hWnd);
+
 
 
 

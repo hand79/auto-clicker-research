@@ -30,6 +30,7 @@ import org.opencv.imgproc.Imgproc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.ResourceUtils;
 
 import com.max.jna.service.JnaUser32ApiService;
 import com.max.jna.type.HWndType;
@@ -82,21 +83,24 @@ public class MaxDemoJnaApplicationTests {
 		System.out.println(rectangle);
 	}
 
-//	@Test
+	@Test
 	public void testCaptaure() throws AWTException, IOException{
-		DesktopWindow window = this.jnaUser32ApiService.findApplicationWindowsByTitle("緯軟學院", false);
+		DesktopWindow window = this.jnaUser32ApiService.findApplicationWindowsByTitle("かんぱに☆ガールズ", false);
 		HWND hWnd = window.getHWND();
 		Rectangle screenRect = this.jnaUser32ApiService.getClientRectRectangle(hWnd);
-		// use GDI32 window Captaure
 		System.out.println(screenRect);
+		Rectangle screenRect2 = this.jnaUser32ApiService.getWindowRectRectangle(hWnd);
+		System.out.println(screenRect2);
+
+		// use GDI32 window Captaure
 		BufferedImage image = GDI32Util.getScreenshot(hWnd);
-		
+//		GDI32.INSTANCE.DeleteObject(hBitmap);
 		// all DesktopWindow
 //		Robot robot = new Robot();
 //		BufferedImage image = robot.createScreenCapture(screenRect);
 		FileOutputStream fos = null;
 		try {
-			  fos = new FileOutputStream("D:\\Captaure.jpg");
+			  fos = new FileOutputStream("G:\\Captaure1.jpg");
 	          ImageIO.write(image, "jpg", fos);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -104,6 +108,7 @@ public class MaxDemoJnaApplicationTests {
 		}finally {
 			 if(fos!=null){
 	                fos.close();
+	                this.jnaUser32ApiService.releaseDC(hWnd);
 	        }
 		}
 	}
@@ -168,93 +173,58 @@ public class MaxDemoJnaApplicationTests {
 		ImageIOUtil.writeImage(r, "jpg", new File("G:\\r.jpg"));
 	}
 	
+	@Test
+	public void testOpenCV() throws InterruptedException, IOException{
+		DesktopWindow window = this.jnaUser32ApiService.findApplicationWindowsByTitle("google", false);
+		HWND hWnd = window.getHWND();
+		HDC hdc = this.jnaUser32ApiService.getDC(hWnd);
+		User32.INSTANCE.SetForegroundWindow(hWnd);
+		// use GDI32 window Captaure
+		BufferedImage scrImage = GDI32Util.getScreenshot(hWnd);
+		System.out.println("windowWidth: " + scrImage.getWidth() + " windowHeight: " + scrImage.getHeight());
+		ImageIOUtil.writeImage(scrImage, "jpg", new File("G://test.jpg"));
+//		Rectangle screenRect = this.jnaUser32ApiService.getClientRectRectangle(hWnd);
+		// title
+		// find title pic
+//		BufferedImage titleImage = this.findPic("window/title.jpg");
+//		ImageIOUtil.writeImage(titleImage, "jpg", new File("G://test.jpg"));
+//		MinMaxLocResult mlrTitle = OpenCVUtil.findCoordinateByTmSqdiffNormed(scrImage, titleImage);
+//		System.out.println(mlrTitle.minVal);
+//		System.out.println(mlrTitle.minLoc.x);
+//		System.out.println(mlrTitle.minLoc.y);
+//		boolean checkTitle = OpenCVUtil.isMatchTmSqdiffNormed(mlrTitle, 0.05);
+//		System.out.println(checkTitle);
+//		if(checkTitle){
+//			int titleX = new BigDecimal(mlrTitle.maxLoc.x).intValue();
+//			int titleY = new BigDecimal(mlrTitle.maxLoc.y).intValue();
+//			this.jnaUser32ApiService.doMouseByPostMessage(hWnd, titleX, titleY, 500);
+//			this.jnaUser32ApiService.doMouseByPostMessage(hWnd, titleX, titleY, 500);
+//			
+//			BufferedImage monsterImage = this.findPic("monster/1.jpg");
+//			MinMaxLocResult mlrMonster = OpenCVUtil.findCoordinateByTmCcoeffNormed(scrImage, monsterImage);
+//			boolean checkMonster = OpenCVUtil.isMatchTmCcoeffNormed(mlrMonster, 0.9);
+//			if(checkMonster){
+//				// skill
+//				this.jnaUser32ApiService.doKeyboardByPostMessage(hWnd, KeyEvent.VK_3, 800);
+//				this.jnaUser32ApiService.doKeyboardByPostMessage(hWnd, KeyEvent.VK_2, 800);
+//				this.jnaUser32ApiService.doKeyboardByPostMessage(hWnd, KeyEvent.VK_1, 800);
+//				Thread.sleep(12000);
+//			} else {
+//				Thread.sleep(3000);
+//			}
+//		}
+	}
+	
+	private BufferedImage findPic(String filePath) throws IOException{
+		File file = ResourceUtils.getFile("classpath:clansenki/"+filePath);
+		BufferedImage image = ImageIOUtil.readImage(file);
+		return image;
+	}
+	
 //    //  For all the other methods, the higher the better
 //    if( match_method  == Imgproc.TM_SQDIFF || match_method == Imgproc.TM_SQDIFF_NORMED )
 //    { matchLoc = mmr.minLoc; }
 //    else
 //    { matchLoc = mmr.maxLoc; }
-	
-	
-	//  TODO Need to check why it is not correct
-//	private int[][] getImageRGB(BufferedImage image) {
-//		int width = image.getWidth();
-//		int height = image.getHeight();
-//		int[][] result = new int[height][width];
-//		for (int h = 0; h < height; h++) {
-//			for (int w = 0; w < width; w++) {
-//				// ARGB to RGB
-//				// image.getRGB(x, y) is ARGB
-//				result[h][w] = image.getRGB(w, h) & 0xFFFFFF;
-//			}
-//		}
-//		return result;
-//	}
-//	
-//
-//	 public int[][][] findImage(BufferedImage scrImage, int[][] srcRGB, BufferedImage cutImage, int[][] cutRGB) {
-//		 int srcHeight = scrImage.getHeight();
-//		 int srcWidth = scrImage.getWidth();
-//		 int cutHeight = cutImage.getHeight();
-//		 int cutWidth = cutImage.getWidth();
-//		 
-//	     int[][][] findImageData = new int[cutHeight][cutWidth][2];
-//	     //遍历屏幕截图像素点数据
-//	     for(int y = 0; y < srcHeight - cutHeight; y++) {
-//	       for(int x = 0; x < srcWidth- cutWidth; x++) {
-//	         if((cutRGB[0][0] ^ srcRGB[y][x])==0
-//	             && 
-//	             (cutRGB[0][cutWidth-1] ^ srcRGB[y][x+cutWidth-1]) == 0
-//	             &&
-//	             (cutRGB[cutHeight-1][cutWidth-1] ^ srcRGB[y+cutHeight-1][x+cutWidth-1]) == 0
-//	             &&
-//	             (cutRGB[cutHeight-1][0] ^ srcRGB[y+cutHeight-1][x]) == 0) {
-//	           
-//	           boolean isFinded = this.isMatchAll(srcRGB, cutRGB, srcHeight, srcWidth, cutHeight, cutWidth, y, x);
-//	           if(isFinded) {
-//	             for(int h=0; h < cutHeight; h++) {
-//	               for(int w=0; w < cutWidth; w++) {
-//	                 findImageData[h][w][0] = y + h; 
-//	                 findImageData[h][w][1] = x + w;
-//	               }
-//	             }
-//	             return findImageData;
-//	           }
-//	         }
-//	       }
-//	     }
-//		return findImageData;
-//	   }
-//	 
-//	 public boolean isMatchAll(int[][] srcRGB, int[][] cutRGB, int srcHeight, int srcWidth, int cutHeight, int cutWidth, int y, int x) {
-//	     // coordinate: src > cut 
-//		 int srcY = 0;
-//	     int srcX = 0;
-//	     int xor = 0;
-//	     for(int cutY = 0; cutY < cutHeight; cutY++) {
-//	       srcY = y + cutY;
-//	       for(int cutX = 0; cutX < cutWidth; cutX++) {
-//	         srcX = x + cutX;
-//	         if(srcY >= srcHeight || srcX >= srcWidth) {
-//	           return false;
-//	         }
-//	         xor = cutRGB[cutY][cutX] ^ srcRGB[srcY][srcX];
-//	         if(xor!=0) {
-//	           return false;
-//	         }
-//	       }
-//	       srcX = x;
-//	     }
-//	     return true;
-//	   }
-//	 
-//	 private void printFindData(int[][][] findImageData, int cutHeight, int cutWidth) {
-//	     for(int y= 0; y < cutHeight; y++) {
-//	       for(int x= 0; x < cutWidth; x++) {
-//	         System.out.print("("+findImageData[y][x][0]+", "+findImageData[y][x][1]+")");
-//	       }
-//	       System.out.println();
-//	     }
-//	 }
-	 
 	
 }

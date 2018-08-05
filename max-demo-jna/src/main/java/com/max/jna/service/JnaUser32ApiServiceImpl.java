@@ -1,6 +1,7 @@
 package com.max.jna.service;
 
 import java.awt.Rectangle;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,7 +70,13 @@ public class JnaUser32ApiServiceImpl implements JnaUser32ApiService{
 		// if hWnd is null, capture the entire screen
 		return this.instance.GetDC(hWnd);
 	}
-
+	
+	@Override
+	public int releaseDC(HWND hWnd) {
+		// if hWnd is null, capture the entire screen
+		return this.instance.ReleaseDC(hWnd, this.instance.GetDC(hWnd));
+	}
+	
 	@Override
 	public RECT getWindowRect(HWND hWnd) {
 		// origin coordinate: screen's upper left corner
@@ -153,6 +160,13 @@ public class JnaUser32ApiServiceImpl implements JnaUser32ApiService{
 		// height & width   unit: pixel
 		// X,Y  position of the window, in client coordinates.
 		return this.instance.SetWindowPos(hWnd, new HWND(new Pointer(hWndInsertAfter)), X, Y, width, height, uFlags);
+	}
+	
+	@Override
+	public boolean SetWindowPos(HWND hWnd, int hWndInsertAfter, int X, int Y, double width, double height, int uFlags) {
+		// height & width   unit: pixel
+		// X,Y  position of the window, in client coordinates.
+		return this.instance.SetWindowPos(hWnd, new HWND(new Pointer(hWndInsertAfter)), X, Y, new BigDecimal(width).intValue(), new BigDecimal(height).intValue(), uFlags);
 	}
 	
 	@Override
