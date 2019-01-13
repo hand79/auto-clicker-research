@@ -7,5 +7,4 @@ By Java, JNA(Window API), OpenCV,  auto-clicker-research
 Primary library: 
 maven, spring boot, openCV, JNA
 
-TODO:
-GUI implement, Mouse click monitor (optional),  
+TODO: Mouse click monitor (optional),  
